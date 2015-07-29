@@ -13,7 +13,7 @@ env:
 before_script:
   - env | sort
   - cd "$VERSION"
-  - image="appropriate/postgis:$VERSION"
+  - image="moofish32/postgis-geocoder:$VERSION"
 
 script:
   - docker build --pull -t "$image" .
