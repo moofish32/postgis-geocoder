@@ -11,8 +11,8 @@ env:
 install:
   - sudo apt-get -qqy update
   - sudo apt-get -qqy install wget
-  - sudo wget -qO- https://get.docker.com/ | sh
-  - sudo sudo usermod -aG docker "$USER"
+  - wget -qO- https://get.docker.com/ | sh
+  - sudo usermod -aG docker "$USER"
 
 before_script:
   - env | sort

@@ -14,9 +14,12 @@ database in [the standard way](http://postgis.net/docs/postgis_installation.html
 ```SQL
 CREATE EXTENSION postgis;
 CREATE EXTENSION postgis_topology;
+CREATE EXTENSION postgis;   
+CREATE EXTENSION fuzzystrmatch;
+CREATE EXTENSION postgis_tiger_geocoder;
 ```
 
-If you are using 9.0 or would otherwise prefer to use the older template database
+If prefer to use the older template database
 mechanism for installing PostGIS, the image also provides a `template_postgis` template
 database with `postgis.sql`, `topology.sql`, and `spatial_ref_sys.sql` loaded.
 
@@ -25,14 +28,18 @@ database with `postgis.sql`, `topology.sql`, and `spatial_ref_sys.sql` loaded.
 In order to run a basic container capable of serving a PostGIS-enabled database,
 start a container as follows:
 
-    docker run --name some-postgis -e POSTGRES_PASSWORD=mysecretpassword -d mdillon/postgis
+    docker run --name some-postgis-geocoder -e POSTGRES_PASSWORD=mysecretpassword -d moofish32/postgis-geocoder
 
 For more detailed instructions about how to start and control your Postgres
 container, see the documentation for the `postgres` image
 [here](https://registry.hub.docker.com/_/postgres/).
 
-Once you have started a database container, you can then connect to the
-database as follows:
+Once you have started a database container, you are going to want to set up the
+TIGER Line data. The data is large and not included in the container directly.
+The first step is the national data and can be run by:
+
+```
+docker exec -it some-postgis-geocoder bash /gisdata/nation.sh
 
     docker run -it --link some-postgis:postgres --rm postgres \
         sh -c 'exec psql -h "$POSTGRES_PORT_5432_TCP_ADDR" -p "$POSTGRES_PORT_5432_TCP_PORT" -U postgres'
