@@ -1,14 +1,14 @@
-# postgis
+# postgis-geocoder
 
-[![Build Status](https://travis-ci.org/appropriate/docker-postgis.svg)](https://travis-ci.org/appropriate/docker-postgis) [![Join the chat at https://gitter.im/appropriate/docker-postgis](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/appropriate/docker-postgis?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/moofish32/postgis-geocoder.svg)](https://travis-ci.org/moofish32/postgis-geocoder) 
 
-The `postgis` image provides a Docker container running Postgres 9 with
+The `postgis-geocoder` image provides a Docker container running Postgres 9 with
 [PostGIS 2.1](http://postgis.net/docs/manual-2.1/) installed. This image is
 based on the official [`postgres`](https://registry.hub.docker.com/_/postgres/)
 image and provides variants for each version of Postgres 9 supported by the
-base image (9.0-9.4).
+base image (9.1-9.4).
 
-On the version 9.1+ images, the PostGIS extension can be installed into your
+On the version 9.1+ images, the PostGIS extensions can be installed into your
 database in [the standard way](http://postgis.net/docs/postgis_installation.html#create_new_db_extensions) via `psql`:
 
 ```SQL

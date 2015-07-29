@@ -1,6 +1,6 @@
 ---
 language: bash
-
+sudo: false
 dist: trusty
 
 env:
