@@ -1,14 +1,18 @@
 ---
 language: bash
-sudo: false
 dist: trusty
 
 env:
-  - VERSION=9.0-2.1
   - VERSION=9.1-2.1
   - VERSION=9.2-2.1
   - VERSION=9.3-2.1
   - VERSION=9.4-2.1
+
+install:
+  - sudo apt-get -qqy update
+  - sudo apt-get -qqy install wget
+  - wget -qO- https://get.docker.com/ | sh
+  - sudo usermod -aG docker "$USER"
 
 before_script:
   - env | sort
@@ -16,4 +20,4 @@ before_script:
   - image="moofish32/postgis-geocoder:$VERSION"
 
 script:
-  - docker build --pull -t "$image" .
+  - sudo docker build --pull -t "$image" .
