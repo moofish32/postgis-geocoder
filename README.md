@@ -1,4 +1,5 @@
 # postgis-geocoder
+Derived from https://github.com/appropriate/docker-postgis
 
 The `postgis-geocoder` image provides a Docker container running Postgres 9 with
 [PostGIS 2.1](http://postgis.net/docs/manual-2.1/) installed. This image is
