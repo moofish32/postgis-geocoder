@@ -20,4 +20,4 @@ before_script:
   - image="moofish32/postgis-geocoder:$VERSION"
 
 script:
-  - docker build --pull -t "$image" .
+  - sudo docker build --pull -t "$image" .
