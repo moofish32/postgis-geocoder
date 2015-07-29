@@ -40,16 +40,55 @@ The first step is the national data and can be run by:
 
 ```
 docker exec -it some-postgis-geocoder bash /gisdata/nation.sh
+```
 
-    docker run -it --link some-postgis:postgres --rm postgres \
-        sh -c 'exec psql -h "$POSTGRES_PORT_5432_TCP_ADDR" -p "$POSTGRES_PORT_5432_TCP_PORT" -U postgres'
+If all you want to do is find out which state a latitude and longitude is in you
+do not have to do anything else. If you want to actually geocode entire
+addresses then you need the specific details TIGER Data for each state, this
+involves a couple of steps, we will do the District of Columbia since it's small
+```
+docker exec some-postgis-geocoder psql -U postgres -d geocoder -o /gisdata/DC.sh -A -t -c "SELECT loader_generate_script(ARRAY['DC'], 'geocoder') AS result;"
+docker exec some-postgis-geocoder chmod +x /gisdata/DC.sh
+docker exec -it some-postgis-geocoder bash /gisdata/DC.sh
+```
+It will take a few minutes to download and install all the data. Once it
+finishes you need to update the indexes:
+```
+docker exec some-postgis-geocoder psql -U postgis -d geocoder -c "SELECT install_missing_indexes();"
+```
+Now lets test and see if all of this works:
+```
+✗ docker exec -it tiger psql -d geocoder -U postgres
+psql (9.3.9)
+Type "help" for help.
+#first lets find all states that overlap with a circle of radius 38558 meters
+#from a latitude and longitude
 
-Using the resulting `psql` shell, you can create a PostGIS-enabled database by
-using the `CREATE EXTENSION` mechanism (or by using `template_postgis` for Postgres 9.0):
+geocoder=# SELECT z.name FROM tiger_data.state_all z
+geocoder-#   WHERE ST_INTERSECTS(
+geocoder(#     ST_Transform(
+geocoder(# ST_Buffer(
+geocoder(# ST_Transform(
+geocoder(# ST_SetSRID(ST_MakePoint(-119.921619, 38.531740),4326), 26986)
+geocoder(# ,38558,8),4269),
+geocoder(#     z.the_geom);
+    name
+------------
+ California
+ Nevada
+(2 rows)
 
-```SQL
-CREATE EXTENSION postgis;
-CREATE EXTENSION postgis_topology;
+#Now geocode an address into a latitude and longitude from a string
+
+geocoder=# SELECT g.rating, ST_X(g.geomout) As lon, ST_Y(g.geomout) As lat,
+geocoder-# (addy).address As stno, (addy).streetname As street,
+geocoder-# (addy).streettypeabbrev As styp, (addy).location As city, (addy).stateabbrev As st,(addy).zip
+geocoder-# FROM geocode('1600 Pennsylvania Ave NW, Washington, DC 20500') As g;
+ rating |        lon        |       lat        | stno |    street    | styp |    city    | st |  zip
+--------+-------------------+------------------+------+--------------+------+------------+----+-------
+      2 | -77.0351147858455 | 38.8986709360362 | 1600 | Pennsylvania | Ave  | Washington | DC | 20502
+(1 row)
+geocoder-# \q
 ```
 
 See [the PostGIS documentation](http://postgis.net/docs/postgis_installation.html#create_new_db_extensions)
