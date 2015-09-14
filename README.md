@@ -18,16 +18,18 @@ CREATE EXTENSION fuzzystrmatch;
 CREATE EXTENSION postgis_tiger_geocoder;
 ```
 
-If prefer to use the older template database
-mechanism for installing PostGIS, the image also provides a `template_postgis` template
-database with `postgis.sql`, `topology.sql`, and `spatial_ref_sys.sql` loaded.
+If prefer to use the older template database mechanism for installing PostGIS, the 
+image also provides a `template_postgis` template database with `postgis.sql`, 
+`topology.sql`, and `spatial_ref_sys.sql` loaded.
 
 ## Usage
 
 In order to run a basic container capable of serving a PostGIS-enabled database,
 start a container as follows:
 
+```
     docker run --name some-postgis-geocoder -e POSTGRES_PASSWORD=mysecretpassword -d moofish32/postgis-geocoder
+```
 
 For more detailed instructions about how to start and control your Postgres
 container, see the documentation for the `postgres` image
@@ -50,12 +52,16 @@ docker exec some-postgis-geocoder psql -U postgres -d geocoder -o /gisdata/DC.sh
 docker exec some-postgis-geocoder chmod +x /gisdata/DC.sh
 docker exec -it some-postgis-geocoder bash /gisdata/DC.sh
 ```
+
 It will take a few minutes to download and install all the data. Once it
 finishes you need to update the indexes:
+
 ```
 docker exec some-postgis-geocoder psql -U postgis -d geocoder -c "SELECT install_missing_indexes();"
 ```
+
 Now lets test and see if all of this works:
+
 ```
 ✗ docker exec -it tiger psql -d geocoder -U postgres
 psql (9.3.9)
