@@ -57,18 +57,26 @@ It will take a few minutes to download and install all the data. Once it
 finishes you need to update the indexes:
 
 ```
-docker exec some-postgis-geocoder psql -U postgis -d geocoder -c "SELECT install_missing_indexes();"
+docker exec some-postgis-geocoder psql -U postgres -d geocoder -c "SELECT install_missing_indexes();"
 ```
 
 Now lets test and see if all of this works:
 
 ```
-✗ docker exec -it tiger psql -d geocoder -U postgres
+✗ docker exec -it some-postgis-geocoder psql -d geocoder -U postgres
 psql (9.3.9)
 Type "help" for help.
 #first lets find all states that overlap with a circle of radius 38558 meters
 #from a latitude and longitude
 
+SELECT z.name FROM tiger_data.state_all z
+ WHERE ST_INTERSECTS(
+  ST_Transform(
+    ST_Buffer(
+     ST_Transform(
+       ST_SetSRID(ST_MakePoint(-119.921619, 38.531740),4326), 26986) ,38558,8),4269), z.the_geom);
+
+# sample output
 geocoder=# SELECT z.name FROM tiger_data.state_all z
 geocoder-#   WHERE ST_INTERSECTS(
 geocoder(#     ST_Transform(
@@ -84,7 +92,13 @@ geocoder(#     z.the_geom);
 (2 rows)
 
 #Now geocode an address into a latitude and longitude from a string
+# for cut n paste
+SELECT g.rating, ST_X(g.geomout) As lon, ST_Y(g.geomout) As lat,
+  (addy).address As stno, (addy).streetname As street,
+  (addy).streettypeabbrev As styp, (addy).location As city, (addy).stateabbrev As st,(addy).zip
+  FROM geocode('1600 Pennsylvania Ave NW, Washington, DC 20500') As g;
 
+#sample output
 geocoder=# SELECT g.rating, ST_X(g.geomout) As lon, ST_Y(g.geomout) As lat,
 geocoder-# (addy).address As stno, (addy).streetname As street,
 geocoder-# (addy).streettypeabbrev As styp, (addy).location As city, (addy).stateabbrev As st,(addy).zip
