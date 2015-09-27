@@ -6,4 +6,5 @@ RUN apt-get update \
       wget unzip \
       && rm -rf /var/lib/apt/lists/* \
       && mkdir -p /docker-entrypoint-initdb.d
+
 COPY ./initdb-postgis.sh /docker-entrypoint-initdb.d/postgis.sh
